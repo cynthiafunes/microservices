@@ -1,0 +1,114 @@
+openapi: 3.0.3
+info:
+  title: Inventario API
+  version: 1.0.0
+  description: API for managing product inventory with RabbitMQ integration and JWT authentication.
+servers:
+  - url: http://localhost:5001
+
+paths:
+  /inventario:
+    get:
+      summary: Obtener todos los inventarios
+      description: Devuelve la lista de productos con sus cantidades en el inventario.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de inventarios obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    producto_id:
+                      type: integer
+                      example: 1
+                    cantidad:
+                      type: integer
+                      example: 50
+        '401':
+          description: No autorizado. Token inválido o no proporcionado.
+
+  /inventario/{producto_id}:
+    get:
+      summary: Obtener inventario por producto
+      description: Devuelve la cantidad disponible del producto en el inventario.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: producto_id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Producto encontrado en inventario.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  producto_id:
+                    type: integer
+                    example: 1
+                  cantidad:
+                    type: integer
+                    example: 50
+        '404':
+          description: Producto no encontrado en inventario.
+        '401':
+          description: No autorizado. Token inválido o no proporcionado.
+
+    put:
+      summary: Actualizar inventario de un producto
+      description: Permite actualizar la cantidad de un producto en el inventario.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: producto_id
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                cantidad:
+                  type: integer
+                  example: 100
+              required:
+                - cantidad
+      responses:
+        '200':
+          description: Inventario actualizado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  mensaje:
+                    type: string
+                    example: Inventario actualizado exitosamente
+        '400':
+          description: Solicitud inválida. El campo 'cantidad' es obligatorio.
+        '404':
+          description: Producto no encontrado en inventario.
+        '401':
+          description: No autorizado. Token inválido o no proporcionado.
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

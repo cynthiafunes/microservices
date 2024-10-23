@@ -1,3 +1,7 @@
 .venv/
 .venvi/
 .venvp/
+__pycache__/
+test_jwt.py
+utils.py
+servicio_productos.log
